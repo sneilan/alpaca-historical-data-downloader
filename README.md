@@ -10,11 +10,17 @@ If ahdd sees that you've already ran and retrieved some data, it will put the da
 ## Roadmap & Features
 
 [x] 1 day bars
+
 [ ] 1 min bars
+
 [ ] 5 min bars
+
 [ ] Quotes
+
 [ ] Trades
+
 [ ] News
+
 [ ] Corporate actions
 
 This tool does not handle stock splits. It merely replicates exactly what is on Alpaca's historical api servers to your hard drive.
