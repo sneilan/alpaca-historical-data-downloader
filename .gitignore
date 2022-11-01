@@ -7,6 +7,7 @@ blender/
 .zsh_history
 .zcompdump
 .wget-hsts
+.npmrc
 .vimrc
 .viminfz.tmp
 .viminfy.tmp
