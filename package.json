@@ -29,5 +29,31 @@
   },
   "devDependencies": {
     "@types/luxon": "^3.0.1"
-  }
+  },
+  "name": "@sneilan/alpaca-historical-data-downloader",
+  "description": "Command line tool (with managed ETL system) to download / sync all alpaca historical data to your hard drive as CSV files.",
+  "version": "1.0.0",
+  "main": "ahdd.js",
+  "scripts": {
+    "test": "ahdd --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sneilan/alpaca-historical-data-downloader.git"
+  },
+  "keywords": [
+    "stock",
+    "alpaca",
+    "historical",
+    "data",
+    "trades",
+    "quotes",
+    "bars"
+  ],
+  "author": "Sean Neilan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sneilan/alpaca-historical-data-downloader/issues"
+  },
+  "homepage": "https://github.com/sneilan/alpaca-historical-data-downloader#readme"
 }
