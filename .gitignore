@@ -52,7 +52,6 @@ keys.py
 hs.js
 node_modules
 .env
-*js
 *sublime*
 data/
 *.js.map
