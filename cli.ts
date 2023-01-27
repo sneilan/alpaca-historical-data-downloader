@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import _ from 'lodash';
 import { syncDailyBars } from './downloaders/1day';
 

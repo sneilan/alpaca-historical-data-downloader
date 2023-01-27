@@ -2,10 +2,13 @@
   "dependencies": {
     "@master-chief/alpaca": "^6.3.20",
     "@types/node": "^18.11.18",
+    "glob": "^8.1.0",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.3"
+    "luxon": "^3.0.3",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@types/glob": "^8.0.1",
     "@types/lodash": "^4.14.184",
     "@types/luxon": "^3.0.1",
     "prettier": "^2.7.1",
