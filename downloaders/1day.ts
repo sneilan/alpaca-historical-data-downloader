@@ -98,10 +98,7 @@ export const syncDailyBars = async (dataDirectory: string) => {
   const directory = `${dataDirectory}/${mapTimeframeToDirName('1Day')}`;
   const tempDirectory = `${directory}.temp`;
   const mergeDirectory = `${directory}.merge`;
-  mergeTempAndRegular(directory, tempDirectory, mergeDirectory);
-  cleanup(tempDirectory, mergeDirectory);
 
-  /*
   // In case program died unexpectedly, run cleanup.
   cleanup(tempDirectory, mergeDirectory);
 
@@ -126,5 +123,4 @@ export const syncDailyBars = async (dataDirectory: string) => {
 
   mergeTempAndRegular(directory, tempDirectory, mergeDirectory);
   cleanup(tempDirectory, mergeDirectory);
-  */
 }
