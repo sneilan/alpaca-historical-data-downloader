@@ -2,6 +2,8 @@
   "dependencies": {
     "@master-chief/alpaca": "^6.3.20",
     "@types/node": "^18.11.18",
+    "cli-progress": "^3.11.2",
+    "commander": "^10.0.0",
     "glob": "^8.1.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.3",
@@ -9,6 +11,7 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
+    "@types/cli-progress": "^3.11.0",
     "@types/glob": "^8.0.1",
     "@types/lodash": "^4.14.184",
     "@types/luxon": "^3.0.1",

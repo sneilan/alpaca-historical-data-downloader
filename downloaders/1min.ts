@@ -5,8 +5,10 @@ import glob from 'glob';
 import fs from 'fs';
 import { logger } from '../logger';
 import { getAllBarsFromAlpaca, getTradeableAssets, mapTimeframeToDirName } from '../helpers';
-import { alpaca, dataDirectory } from '../environment';
+import { alpaca } from '../environment';
 
+// Cause an error
+const dataDirectory = '/root'
 
 const downloadAllIntradayBars = async (symbol: string, start: DateTime, end: DateTime, timeframe: BarsV1Timeframe) => {
   logger.info(`Getting all 1min bars from alpaca for symbol ${symbol}`);
