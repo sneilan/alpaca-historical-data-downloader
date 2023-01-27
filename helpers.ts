@@ -13,7 +13,7 @@ export const getAllBarsFromAlpaca = async (
   start: Date,
   end: Date
 ) => {
-  logger.info(`Grabbing first page of ${timeframe} bars for ${symbol}`);
+  // logger.info(`Grabbing first page of ${timeframe} bars for ${symbol}`);
   let resp = await alpaca.getBars({ symbol, start, end, timeframe, adjustment: 'split' }).catch(e => {
     logger.info(e);
     throw Error(`Issue with getting bars for symbol ${symbol} on ${timeframe}. Error is ${e}`);
@@ -28,7 +28,7 @@ export const getAllBarsFromAlpaca = async (
 
   // until the next token we receive is null
   while (page_token != null) {
-    logger.info(`Grabbing more data from ${timeframe} bars ${page_token} from ${symbol}`);
+    // logger.info(`Grabbing more data from ${timeframe} bars ${page_token} from ${symbol}`);
     let resp = await alpaca.getBars({ symbol, start, end, timeframe, page_token }).catch(e => {
       logger.error('Issue with paginated getting bars', e);
       return;

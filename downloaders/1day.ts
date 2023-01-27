@@ -3,6 +3,15 @@ import logger from '../logger';
 import { getAllBarsFromAlpaca, mapTimeframeToDirName, getTradeableAssets } from '../helpers';
 import fs from 'fs';
 import _ from 'lodash';
+import cliProgress from 'cli-progress';
+import colors from 'ansi-colors';
+
+const b1 = new cliProgress.SingleBar({
+  format: colors.cyan('{bar}') + '| {percentage}% | {symbol} {value}/{total} Symbols || Speed: {speed}',
+  barCompleteChar: '\u2588',
+  barIncompleteChar: '\u2591',
+  hideCursor: true
+});
 
 // divide into temp & finalized
 export const dailyBarHeaders = `symbol,open,high,low,close,volume_weighted,n`;
@@ -12,7 +21,7 @@ export const dailyBarHeaders = `symbol,open,high,low,close,volume_weighted,n`;
 // merge the files.
 
 const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime, end: DateTime, tempDirectory: string) => {
-  logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
+  // logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
   const timeframe = '1Day';
 
   const bars = await getAllBarsFromAlpaca(symbol, timeframe, start.toJSDate(), end.minus({ days: 1 }).toJSDate());
@@ -23,7 +32,7 @@ const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime
 
     fs.mkdirSync(tempDirectory, { recursive: true });
 
-      const barData = `${symbol},${bar.o},${bar.h},${bar.l},${bar.c},${(bar as any).vw},${(bar as any).n}`;
+    const barData = `${symbol},${bar.o},${bar.h},${bar.l},${bar.c},${(bar as any).vw},${(bar as any).n}`;
 
     if (fs.existsSync(file)) {
       fs.appendFileSync(file, barData + '\n');
@@ -34,7 +43,11 @@ const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime
     }
   }
 
-  logger.info(`Downloaded ${bars.length} ${timeframe} bars for ${symbol}`);
+  b1.increment(1, {
+    symbol
+  });
+
+  // logger.info(`Downloaded ${bars.length} ${timeframe} bars for ${symbol}`);
 }
 
 export const mergeTempAndRegular = (directory: string, tempDirectory: string, mergeDirectory: string) => {
@@ -47,9 +60,9 @@ export const mergeTempAndRegular = (directory: string, tempDirectory: string, me
     const stockFile = `${directory}/${f}`;
     const mergedStockFile = `${mergeDirectory}/${f}`
 
-    logger.info(stockFile);
+    // logger.info(stockFile);
     if (fs.existsSync(stockFile)) {
-      logger.info(f);
+      // logger.info(f);
 
       // slice skips the header row.
       const readSymbolsFromFileIntoDict = (filename: string) => {
@@ -81,7 +94,7 @@ export const mergeTempAndRegular = (directory: string, tempDirectory: string, me
       fs.copyFileSync(mergedStockFile, stockFile);
 
     } else {
-      logger.info(`Copying ${tempStockFile} to ${stockFile}`);
+      // logger.info(`Copying ${tempStockFile} to ${stockFile}`);
       fs.copyFileSync(tempStockFile, stockFile);
     }
   }
@@ -95,6 +108,7 @@ export const cleanup = (tempDirectory: string, mergeDirectory: string) => {
 // It's probably better to write to a new file and resolve the files line by line.
 
 export const syncDailyBars = async (dataDirectory: string) => {
+
   const directory = `${dataDirectory}/${mapTimeframeToDirName('1Day')}`;
   const tempDirectory = `${directory}.temp`;
   const mergeDirectory = `${directory}.merge`;
@@ -106,6 +120,10 @@ export const syncDailyBars = async (dataDirectory: string) => {
     return x.symbol;
   });
 
+  b1.start(tradeableSymbols.length, 0, {
+    speed: "N/A"
+  });
+
   // Adjust to taste or set to many years ago if doing a full sync.
   const end = DateTime.now();
   let start = DateTime.now().minus({ months: 1 });
@@ -115,12 +133,16 @@ export const syncDailyBars = async (dataDirectory: string) => {
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
   for (const s of tradeableSymbols) {
-    logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
+    // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
     await downloadAllDailyBarsIntoTempFiles(s, start, end, tempDirectory);
     // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
     // logger.info(`Symbol ${s} is up to date.`);
   }
 
+  b1.stop();
+
+  logger.info(`Merging alpaca temp files into main data folder...`)
   mergeTempAndRegular(directory, tempDirectory, mergeDirectory);
   cleanup(tempDirectory, mergeDirectory);
+  logger.info(`Done!`)
 }

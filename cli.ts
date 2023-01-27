@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 import _ from 'lodash';
-import { mergeTempAndRegular, syncDailyBars } from './downloaders/1day';
+import { syncDailyBars } from './downloaders/1day';
 import { program } from 'commander';
-import cliProgress from 'cli-progress';
 
 const f = async () => {
   // by default if nothing in data directory, does full sync.
