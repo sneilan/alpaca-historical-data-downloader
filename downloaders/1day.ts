@@ -13,8 +13,6 @@ const b1 = new cliProgress.SingleBar({
   hideCursor: true
 });
 
-const start = DateTime.now();
-
 // divide into temp & finalized
 export const dailyBarHeaders = `symbol,open,high,low,close,volume_weighted,n`;
 
@@ -122,16 +120,15 @@ export const syncDailyBars = async (dataDirectory: string) => {
     return x.symbol;
   });
 
-  b1.start(tradeableSymbols.length, 0, {
-    speed: "N/A"
-  });
-
   // Adjust to taste or set to many years ago if doing a full sync.
   const end = DateTime.now();
   let start = DateTime.now().minus({ months: 1 });
   if (!fs.existsSync(directory)) {
     start = DateTime.now().minus({ years: 6 });
   }
+
+  logger.info(`Downloading 1Day bars since ${start.toRFC2822()})`);
+  b1.start(tradeableSymbols.length, 0);
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
   for (const s of tradeableSymbols) {
