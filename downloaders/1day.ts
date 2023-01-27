@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import logger from '../logger';
-import { dailyBarHeaders, dataDirectory } from '../env';
+import { dailyBarHeaders, dataDirectory } from '../environment';
 import { getAllBarsFromAlpaca, mapTimeframeToDirName, getTradeableAssets } from '../helpers';
 import fs from 'fs';
 import _ from 'lodash';
@@ -104,8 +104,10 @@ export const syncDailyBars = async () => {
 
   // Adjust to taste or set to many years ago if doing a full sync.
   const end = DateTime.now();
-  // const start = DateTime.now().minus({ years: 6 });
-  const start = DateTime.now().minus({ months: 1 });
+  let start = DateTime.now().minus({ months: 1 });
+  if (!fs.existsSync(directory)) {
+    start = DateTime.now().minus({ years: 6 });
+  }
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
   for (const s of tradeableSymbols) {

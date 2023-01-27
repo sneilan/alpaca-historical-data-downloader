@@ -5,7 +5,7 @@ import glob from 'glob';
 import fs from 'fs';
 import { logger } from '../logger';
 import { getAllBarsFromAlpaca, getTradeableAssets, mapTimeframeToDirName } from '../helpers';
-import { alpaca, dataDirectory } from '../env';
+import { alpaca, dataDirectory } from '../environment';
 
 
 const downloadAllIntradayBars = async (symbol: string, start: DateTime, end: DateTime, timeframe: BarsV1Timeframe) => {

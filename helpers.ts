@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { BarsV1Timeframe } from '@master-chief/alpaca';
 import logger from './logger'
-import { alpaca } from './env';
+import { alpaca } from './environment';
 
 export const mapTimeframeToDirName = (timeframe: BarsV1Timeframe) => {
   return timeframe.toLowerCase();
@@ -14,7 +14,7 @@ export const getAllBarsFromAlpaca = async (
   end: Date
 ) => {
   logger.info(`Grabbing first page of ${timeframe} bars for ${symbol}`);
-  let resp = await alpaca.getBars({ symbol, start, end, timeframe }).catch(e => {
+  let resp = await alpaca.getBars({ symbol, start, end, timeframe, adjustment: 'split' }).catch(e => {
     logger.info(e);
     throw Error(`Issue with getting bars for symbol ${symbol} on ${timeframe}. Error is ${e}`);
   });

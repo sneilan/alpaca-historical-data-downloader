@@ -1,22 +1,11 @@
 import _ from 'lodash';
-import { syncDailyBars } from './downloaders/daily';
-import yargs from 'yargs/yargs';
+import { syncDailyBars } from './downloaders/1day';
 
 const f = async () => {
-  // @TODO work in progress.
-  // await syncLatestIntradayBars('1Min');
-  /*
-  const argv = yargs(process.argv.slice(2)).options({
-    start: {
-      type: 'string'
-    },
-    end: {
-      type: 'string'
-    }
-  }).parseSync();
-  // @TODO param to do full sync.
-  */
-
+  // by default if nothing in data directory, does full sync.
+  // if there's data in the data directory, sync last 30 days.
+  // for now no extra params. just run daily.
+  
   await syncDailyBars();
 }
 
