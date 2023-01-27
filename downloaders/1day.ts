@@ -14,7 +14,6 @@ const directory = `${dataDirectory}/${mapTimeframeToDirName('1Day')}`;
 const tempDirectory = `${directory}.temp`;
 const mergeDirectory = `${directory}.merge`;
 
-
 const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime, end: DateTime) => {
   logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
   const timeframe = '1Day';
@@ -27,7 +26,7 @@ const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime
 
     fs.mkdirSync(tempDirectory, { recursive: true });
 
-    const barData = `${symbol},${bar.o},${bar.h},${bar.l},${bar.c},${(bar as any).vw},${(bar as any).n}`;
+      const barData = `${symbol},${bar.o},${bar.h},${bar.l},${bar.c},${(bar as any).vw},${(bar as any).n}`;
 
     if (fs.existsSync(file)) {
       fs.appendFileSync(file, barData + '\n');
