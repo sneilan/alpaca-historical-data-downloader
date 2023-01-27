@@ -39,7 +39,7 @@ const downloadAllDailyBarsIntoTempFiles = async (symbol: string, start: DateTime
 
 export const mergeTempAndRegular = (directory: string, tempDirectory: string, mergeDirectory: string) => {
   if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory);
+    fs.mkdirSync(directory, {recursive: true});
   }
 
   for (const f of fs.readdirSync(tempDirectory)) {
@@ -74,7 +74,7 @@ export const mergeTempAndRegular = (directory: string, tempDirectory: string, me
 
       // @TODO this is probably not efficient.
       if (!fs.existsSync(mergeDirectory)) {
-        fs.mkdirSync(mergeDirectory);
+        fs.mkdirSync(mergeDirectory, {recursive: true});
       }
 
       fs.writeFileSync(mergedStockFile, [dailyBarHeaders, ...mergedFileContent].join('\n'));
