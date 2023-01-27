@@ -7,11 +7,13 @@ import cliProgress from 'cli-progress';
 import colors from 'ansi-colors';
 
 const b1 = new cliProgress.SingleBar({
-  format: colors.cyan('{bar}') + '| {percentage}% | {symbol} {value}/{total} Symbols || Speed: {speed}',
+  format: colors.cyan('{bar}') + ' | {percentage}% | {symbol} {value}/{total} Symbols | Runtime: {duration_formatted} Eta: {eta_formatted}',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
   hideCursor: true
 });
+
+const start = DateTime.now();
 
 // divide into temp & finalized
 export const dailyBarHeaders = `symbol,open,high,low,close,volume_weighted,n`;
