@@ -1,14 +1,15 @@
 {
   "dependencies": {
     "@master-chief/alpaca": "^6.3.20",
+    "@types/node": "^18.11.18",
     "lodash": "^4.17.21",
     "luxon": "^3.0.3"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.184",
     "@types/luxon": "^3.0.1",
-    "typescript": "^4.8.2",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.2"
   },
   "name": "@sneilan/alpaca-historical-data-downloader",
   "description": "Command line tool (with managed ETL system) to download / sync all alpaca historical data to your hard drive as CSV files.",
