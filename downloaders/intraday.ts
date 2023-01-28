@@ -48,9 +48,8 @@ export const syncLatestIntradayBars = async (dataDirectory: string, timeframe: B
     return x.symbol;
   });
 
-  // Adjust to taste or set to many years ago if doing a full sync.
   const calendar = await alpaca.getCalendar({
-    start: DateTime.now().minus({ months: 2 }).toJSDate(),
+    start: DateTime.now().minus({ years: 6 }).toJSDate(),
     end: DateTime.now().minus({ days: 1 }).toJSDate()
   });
 
