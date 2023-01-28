@@ -122,7 +122,7 @@ export const syncDailyBars = async (dataDirectory: string) => {
 
   // Adjust to taste or set to many years ago if doing a full sync.
   const end = DateTime.now();
-  let start = DateTime.now().minus({ months: 1 });
+  let start = DateTime.now().minus({ days: 5 });
   if (!fs.existsSync(directory)) {
     start = DateTime.now().minus({ years: 6 });
   }
