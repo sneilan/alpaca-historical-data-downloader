@@ -7,11 +7,8 @@ import { logger } from '../logger';
 import { getAllBarsFromAlpaca, getTradeableAssets, mapTimeframeToDirName } from '../helpers';
 import { alpaca } from '../environment';
 
-// Cause an error
-const dataDirectory = '/root'
-
-const downloadAllIntradayBars = async (symbol: string, start: DateTime, end: DateTime, timeframe: BarsV1Timeframe) => {
-  logger.info(`Getting all 1min bars from alpaca for symbol ${symbol}`);
+const downloadAllIntradayBars = async (dataDirectory: string, symbol: string, start: DateTime, end: DateTime, timeframe: BarsV1Timeframe) => {
+  logger.info(`Getting all ${timeframe} bars from alpaca for symbol ${symbol}`);
   const bars = await getAllBarsFromAlpaca(symbol, timeframe, start.toJSDate(), end.toJSDate());
 
   const barsGroupedByDate = _.groupBy(bars, (x) => {
@@ -46,7 +43,7 @@ const downloadAllIntradayBars = async (symbol: string, start: DateTime, end: Dat
 }
 
 
-export const syncLatestIntradayBars = async (timeframe: BarsV1Timeframe) => {
+export const syncLatestIntradayBars = async (dataDirectory: string, timeframe: BarsV1Timeframe) => {
   const tradeableSymbols = (await getTradeableAssets()).map(x => {
     return x.symbol;
   });
@@ -63,7 +60,7 @@ export const syncLatestIntradayBars = async (timeframe: BarsV1Timeframe) => {
       const downloaded = glob.sync(`${dataDirectory}/${mapTimeframeToDirName(timeframe)}/${c.date}/${s}.csv`).length === 1;
       if (!downloaded) {
         logger.info(`Downloading ${timeframe} bars for ${s} from ${c.date} onwards.`);
-        await downloadAllIntradayBars(s, DateTime.fromISO(c.date), DateTime.now().minus({ minutes: 15 }), timeframe)
+        await downloadAllIntradayBars(dataDirectory, s, DateTime.fromISO(c.date), DateTime.now().minus({ minutes: 15 }), timeframe)
         break;
       }
     }
