@@ -16,7 +16,7 @@ const f = async () => {
   program.option('--data-dir <dir>', 'The directory to store historical data from alpaca', './data');
   program.option('--construct-database', `Constructs a sqlite3 database file called daily.db inside of --data-dir from all 1day files.
     If daily.db already exists, updates file.`, false);
-  program.option('--download-1-min-bars', 'Download 1 minute bars in --data-dir. By default syncs all minute bars from 6 years ago.', './data');
+  program.option('--download-1-min-bars', 'Download 1 minute bars in --data-dir. By default syncs all minute bars from 6 years ago.', false);
   program.parse();
 
   const options = program.opts();
@@ -34,5 +34,5 @@ const f = async () => {
 
   await syncDailyBars(options.dataDir);
 }
-
 f();
+
