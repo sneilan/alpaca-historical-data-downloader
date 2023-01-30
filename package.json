@@ -24,7 +24,7 @@
   },
   "name": "@sneilan/alpaca-historical-data-downloader",
   "description": "Command line tool (with managed ETL system) to download / sync all alpaca historical data to your hard drive as CSV files.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "ahdd.js",
   "scripts": {
     "test": "ahdd --help"
