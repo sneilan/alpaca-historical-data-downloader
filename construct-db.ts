@@ -99,7 +99,7 @@ export const buildDb = async (dataDirectory: string, start?: DateTime) => {
         low: parseFloat(low),
         close: parseFloat(close),
         volume_weighted: parseInt(volume_weighted),
-        n: parseInt(volume_weighted),
+        n: parseInt(n),
         date
       });
     }
