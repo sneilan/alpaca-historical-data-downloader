@@ -59,7 +59,7 @@ export const buildDb = async (dataDirectory: string, start?: DateTime) => {
 
   const Bar = await getBarModel(sequelize);
 
-  const dir = '../data/1day';
+  const dir = `${dataDirectory}/1day`;
   const dateFilenames = fs.readdirSync(dir);
 
   const filteredFiles = start ? dateFilenames.filter((d) => {
