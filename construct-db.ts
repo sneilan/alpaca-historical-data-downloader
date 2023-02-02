@@ -36,10 +36,6 @@ const getBarModel = async (sequelize: Sequelize) => {
 }
 
 const loadDb = async (dataDirectory: string) => {
-  // if (fs.existsSync(storage)) {
-    // fs.rmSync(storage);
-  // }
-
   const storage = getDatabaseName(dataDirectory);
 
   const sequelize = new Sequelize({
