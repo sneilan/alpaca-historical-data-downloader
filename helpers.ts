@@ -1,64 +1,51 @@
 import _ from 'lodash';
-import { BarsV1Timeframe } from '@master-chief/alpaca';
-import logger from './logger'
+import logger from './logger';
 import { alpaca, alpacaJs } from './environment';
+import { TimeFrameUnit } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 
-export const mapTimeframeToDirName = (timeframe: BarsV1Timeframe) => {
-  return timeframe.toLowerCase();
-}
+export type timeframe = 'hour' | 'min' | 'day' | 'week' | 'month';
 
-export const getAllBarsFromAlpaca = async (
-  symbols: string[],
-  timeframe: BarsV1Timeframe,
-  start: Date,
-  end: Date
-) => {
-  logger.info(`Grabbing first page of ${timeframe} bars for ${symbols.join(', ')}`);
-  const bars = alpacaJs.getMultiBarsV2(symbols, {
-  });
-
-  /*
-  let resp = await alpaca.getBars({ symbol, start, end, timeframe, adjustment: 'split' }).catch(e => {
-    logger.info(e);
-    throw Error(`Issue with getting bars for symbol ${symbol} on ${timeframe}. Error is ${e}`);
-  });
-  
-  if (!resp) {
-    return [];
-  }
-  let bars = resp.bars;
-  
-  let page_token = resp.next_page_token;
-  
-  // until the next token we receive is null
-  while (page_token != null) {
-    // logger.info(`Grabbing more data from ${timeframe} bars ${page_token} from ${symbol}`);
-    let resp = await alpaca.getBars({ symbol, start, end, timeframe, page_token }).catch(e => {
-      logger.error('Issue with paginated getting bars', e);
-      return;
-    });
-  
-    if (!resp) {
-      return [];
-    }
-  
-    bars = [...bars, ...resp.bars];
-    page_token = resp.next_page_token;
-  }
-  
-  return bars;
-    */
-  return [];
+export const getTimeFrame = (amount: number, unit: timeframe) => {
+  const timeframeMap: { [frame in timeframe]: TimeFrameUnit } = {
+    hour: TimeFrameUnit.HOUR,
+    day: TimeFrameUnit.DAY,
+    min: TimeFrameUnit.MIN,
+    week: TimeFrameUnit.WEEK,
+    month: TimeFrameUnit.MONTH
+  };
+  return alpacaJs.newTimeframe(amount, timeframeMap[unit]);
 };
+
+export const mapTimeframeToDirName = (timeframe: string) => {
+  return timeframe.toLowerCase();
+};
+
+export async function* getAllBarsFromAlpaca(symbols: string[], start: Date, end: Date, timeframe: string) {
+  const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, {
+    start,
+    end,
+    timeframe
+  });
+
+  do {
+    const bar = await barsGenerator.next();
+
+    if (bar.done) {
+      return;
+    }
+
+    yield bar.value;
+  } while (true);
+}
 
 export const getTradeableAssets = async () => {
   try {
     const assets = await alpaca.getAssets();
     return assets.filter(x => {
-      return x.tradable && !x.symbol.includes('/')
+      return x.tradable && !x.symbol.includes('/');
     });
   } catch (e: unknown) {
     logger.error(`Could not get tradeable assets from alpaca. error is ${e}`);
-    throw Error()
+    throw Error();
   }
-}
+};
