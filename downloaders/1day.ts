@@ -30,17 +30,21 @@ const downloadAllDailyBarsIntoTempFiles = async (
 ) => {
   // logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
 
-  // If user has a better subscription, they can get data up until current date.
+  // @TODO If user has a better subscription, they can get data up until current date.
+  if (end.diffNow().days < 1) {
+    end = DateTime.now().minus({days: 1});
+  }
+  end = DateTime.now(); 
   const barsIterator = getAllBarsFromAlpaca(
     symbols,
     start.toJSDate(),
-    end.minus({ days: 1 }).toJSDate(),
+    end.toJSDate(),
     getTimeFrame(1, 'day')
   );
 
   for await (const bar of barsIterator) {
     // @TODO check timestamp format.
-    console.log(bar.Timestamp);
+    // console.log(bar.Timestamp);
     const date = bar.Timestamp.split('T')[0];
     const file = `${tempDirectory}/${date}.csv`;
 

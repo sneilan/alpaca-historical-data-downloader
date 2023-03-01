@@ -2,6 +2,7 @@ import _ from 'lodash';
 import logger from './logger';
 import { alpaca, alpacaJs } from './environment';
 import { TimeFrameUnit } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import { Adjustment, GetBarsParams } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/rest_v2';
 
 export type timeframe = 'hour' | 'min' | 'day' | 'week' | 'month';
 
@@ -21,11 +22,14 @@ export const mapTimeframeToDirName = (timeframe: string) => {
 };
 
 export async function* getAllBarsFromAlpaca(symbols: string[], start: Date, end: Date, timeframe: string) {
-  const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, {
-    start,
-    end,
-    timeframe
-  });
+  const a: GetBarsParams = {
+    // Needs to be in YYYY-MM-DD format per https://www.npmjs.com/package/@alpacahq/alpaca-trade-api
+    start: start.toISOString().split('T')[0],
+    end: end.toISOString().split('T')[0],
+    timeframe,
+    adjustment: Adjustment.SPLIT
+  }
+  const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, a);
 
   do {
     const bar = await barsGenerator.next();

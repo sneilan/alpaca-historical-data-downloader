@@ -6,14 +6,8 @@ import { program } from 'commander';
 import { buildDb } from './construct-db';
 import logger from './logger';
 import { syncLatestIntradayBars } from './downloaders/intraday';
-import { alpacaJs } from './environment';
-import { TimeFrameUnit } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 // import { getTradeableAssets } from './helpers';
 // import { DateTime } from 'luxon';
-
-const timeframeToDir = (amount: number, unit: TimeFrameUnit) => {
-  return alpacaJs.newTimeframe(1, alpacaJs.timeframeUnit.HOUR);
-};
 
 const f = async () => {
   // by default if nothing in data directory, does full sync.
