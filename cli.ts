@@ -20,6 +20,7 @@ const f = async () => {
     undefined
   );
   program.option('--end <endDate>', 'Date in YYYY-MM-DD format to download data to. Defaults to yesterday.', undefined);
+  program.option('--symbols <symbols>', 'List of symbols to ger data for in format of MSFT,AAPL,GLD defaults to all symbols.', undefined);
 
   program.option('--paper', 'Use paper trading data.', false);
   program.option('--data-dir <dir>', 'The directory to store historical data from alpaca', './data');
@@ -48,7 +49,7 @@ const f = async () => {
     syncLatestIntradayBars(options.dataDir, '1Min');
     return;
   }
-  console.log(options.dataDir);
+
   await syncDailyBars(options as { dataDir: string; start: undefined | string; end: undefined | string });
 };
 f();

@@ -22,14 +22,14 @@ export const mapTimeframeToDirName = (timeframe: string) => {
 };
 
 export async function* getAllBarsFromAlpaca(symbols: string[], start: Date, end: Date, timeframe: string) {
-  const a: GetBarsParams = {
+  const barParams: GetBarsParams = {
     // Needs to be in YYYY-MM-DD format per https://www.npmjs.com/package/@alpacahq/alpaca-trade-api
     start: start.toISOString().split('T')[0],
     end: end.toISOString().split('T')[0],
     timeframe,
     adjustment: Adjustment.SPLIT
   }
-  const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, a);
+  const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, barParams);
 
   do {
     const bar = await barsGenerator.next();

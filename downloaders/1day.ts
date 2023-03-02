@@ -127,7 +127,7 @@ export const cleanup = (tempDirectory: string, mergeDirectory: string) => {
 
 // It's probably better to write to a new file and resolve the files line by line.
 
-export const syncDailyBars = async (params: { dataDir: string }) => {
+export const syncDailyBars = async (params: { dataDir: string, start?: string, end?: string }) => {
   const { dataDir } = params;
 
   const directory = `${dataDir}/${mapTimeframeToDirName('1Day')}`;
@@ -142,10 +142,16 @@ export const syncDailyBars = async (params: { dataDir: string }) => {
   });
 
   // Adjust to taste or set to many years ago if doing a full sync.
-  const end = DateTime.now();
+  let end = DateTime.now();
+  if (params.end) {
+    end = DateTime.fromFormat(params.end, 'yyyy-MM-dd')
+  }
   let start = DateTime.now().minus({ days: 5 });
   if (!fs.existsSync(directory)) {
     start = DateTime.now().minus({ years: 6 });
+  }
+  if (params.start) {
+    start = DateTime.fromFormat(params.start, 'yyyy-MM-dd')
   }
 
   logger.info(`Downloading 1Day bars since ${start.toRFC2822()})`);
