@@ -29,7 +29,6 @@ export async function* getAllBarsFromAlpaca(symbols: string[], start: Date, end:
     timeframe,
     adjustment: Adjustment.SPLIT
   };
-  console.log(barParams);
 
   const barsGenerator = alpacaJs.getMultiBarsAsyncV2(symbols, barParams);
 
