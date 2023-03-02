@@ -30,21 +30,10 @@ const downloadAllDailyBarsIntoTempFiles = async (
 ) => {
   // logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
 
-  // @TODO If user has a better subscription, they can get data up until current date.
-  if (end.diffNow().days < 1) {
-    end = DateTime.now().minus({days: 1});
-  }
-  end = DateTime.now(); 
-  const barsIterator = getAllBarsFromAlpaca(
-    symbols,
-    start.toJSDate(),
-    end.toJSDate(),
-    getTimeFrame(1, 'day')
-  );
+  const barsIterator = getAllBarsFromAlpaca(symbols, start.toJSDate(), end.toJSDate(), getTimeFrame(1, 'day'));
 
   for await (const bar of barsIterator) {
     // @TODO check timestamp format.
-    // console.log(bar.Timestamp);
     const date = bar.Timestamp.split('T')[0];
     const file = `${tempDirectory}/${date}.csv`;
 
@@ -127,7 +116,7 @@ export const cleanup = (tempDirectory: string, mergeDirectory: string) => {
 
 // It's probably better to write to a new file and resolve the files line by line.
 
-export const syncDailyBars = async (params: { dataDir: string, start?: string, end?: string, symbols?: string[] }) => {
+export const syncDailyBars = async (params: { dataDir: string; start?: string; end?: string; symbols?: string[] }) => {
   const { dataDir } = params;
 
   const directory = `${dataDir}/${mapTimeframeToDirName('1Day')}`;
@@ -147,24 +136,30 @@ export const syncDailyBars = async (params: { dataDir: string, start?: string, e
   // Adjust to taste or set to many years ago if doing a full sync.
   let end = DateTime.now();
   if (params.end) {
-    end = DateTime.fromFormat(params.end, 'yyyy-MM-dd')
+    end = DateTime.fromFormat(params.end, 'yyyy-MM-dd');
   }
+
+  // @TODO If user has a better subscription, they can get data up until last 15 minutes.
+  if (Math.abs(end.diffNow('days').get('days')) < 1) {
+    end = DateTime.now().minus({ days: 1 });
+  }
+
   let start = DateTime.now().minus({ days: 5 });
   if (!fs.existsSync(directory)) {
     start = DateTime.now().minus({ years: 6 });
   }
   if (params.start) {
-    start = DateTime.fromFormat(params.start, 'yyyy-MM-dd')
+    start = DateTime.fromFormat(params.start, 'yyyy-MM-dd');
   }
 
-  logger.info(`Downloading 1Day bars since ${start.toRFC2822()})`);
+  logger.info(`Downloading 1Day bars since ${start.toRFC2822()} to ${end.toRFC2822()}`);
   b1.start(tradeableSymbols.length, 0);
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
-    // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
-    await downloadAllDailyBarsIntoTempFiles(tradeableSymbols, start, end, tempDirectory);
-    // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
-    // logger.info(`Symbol ${s} is up to date.`);
+  // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
+  await downloadAllDailyBarsIntoTempFiles(tradeableSymbols, start, end, tempDirectory);
+  // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
+  // logger.info(`Symbol ${s} is up to date.`);
 
   b1.stop();
 
