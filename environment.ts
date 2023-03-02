@@ -1,5 +1,5 @@
 import { AlpacaClient } from '@master-chief/alpaca';
-import Alpaca from '@alpacahq/alpaca-trade-api'
+import Alpaca from '@alpacahq/alpaca-trade-api';
 
 const key = process.env.ALPACA_KEY;
 if (!key) {

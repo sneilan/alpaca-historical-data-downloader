@@ -3,27 +3,9 @@ Command line tool (with managed ETL system) to download / sync all alpaca histor
 
 Alpaca https://alpaca.markets/ is an API-first stock / crypto brokerage. They provide api access to download trades, quotes, news, corporate actions and bars https://alpaca.markets/docs/api-references/market-data-api/. This tool syncs all of this available data from Alpaca to your hard drive as CSV files so you can create a professional backtesting and stock / crypto exploration environment.
 
-The first time the tool runs, by default it downloads everything which can take a very very long time (potentially months on a free plan). There are some options to focus on specific data types and filters on date ranges so you can get started backtesting sooner rather than later. Or you can pay for a $99/month plan temporarily which will speed up this process.
+The first time the tool runs, it downloads all available 1 day bars which takes about an hour or two. There are some options to focus on specific data types and filters on date ranges so you can get started backtesting sooner rather than later. Or you can pay for a $99/month plan temporarily which will speed up this process.
 
 If the downloader sees that you've already ran and retrieved some data, it will put the data into a staging folder, which gets merged with your existing downloaded CSV files so if there are corrections to the data from Alpaca, these will be handled. By default, this tool assumes whatever is on Alpaca's servers is the correct data.
-
-## Roadmap & Features
-
-[x] 1 day bars
-
-[ ] 1 min bars
-
-[ ] 5 min bars
-
-[ ] Quotes
-
-[ ] Trades
-
-[ ] News
-
-[ ] Corporate actions
-
-@TODO put git linter / status badges here.
 
 ## Installation & Usage
 
@@ -38,8 +20,26 @@ alpaca-historical-data-downloader
 
 # or specify a different data directory
 alpaca-historical-data-downloader --data-dir=/your/data/folder
+
+# specify a start date 
+alpaca-historical-data-downloader --start=2020-01-01
+
+# or an end date 
+alpaca-historical-data-downloader --end=2021-01-01
+
+# specific symbols
+alpaca-historical-data-downloader --symbols GOOG AAPL MSFT
+
+# combine params
+alpaca-historical-data-downloader --start=2020-01-01 --end=2021-01-01 --symbols GOOG AAPL MSFT
+# This will download only google, apple and msft symbol information from 2020-01-01 to 2021-01-01 inclusive.
 ```
 
 This will create a folder called data in the same directory that you ran ahdd in. It will take the next hour (more data types to come!) to download all daily bars for every available non-crypto stock available for trading in the last
 
 Running the tool again will take far less time because it will detect the data folder and see the csv files in the data/1day folder. It will proceed to sync only what it needs to. This command can be ran each day and it will sync yesterday's market data (on the free plan) or today's market data on the paid plan.
+
+## Roadmap & Features
+
+Currently supporting 1 day bars.
+Soon other time frames like 1 min, quotes, trades, news and corporate actions.

@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import logger from '../logger';
-import { getAllBarsFromAlpaca, mapTimeframeToDirName, getTradeableAssets } from '../helpers';
+import { getAllBarsFromAlpaca, mapTimeframeToDirName, getTradeableAssets, getTimeFrame } from '../helpers';
 import fs from 'fs';
 import _ from 'lodash';
 import cliProgress from 'cli-progress';
@@ -28,44 +28,32 @@ const downloadAllDailyBarsIntoTempFiles = async (
   end: DateTime,
   tempDirectory: string
 ) => {
-  // logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
-  const timeframe = '1Day';
+  const barsIterator = getAllBarsFromAlpaca(symbols, start.toJSDate(), end.toJSDate(), getTimeFrame(1, 'day'));
 
-  const bars = await getAllBarsFromAlpaca(symbols, timeframe, start.toJSDate(), end.minus({ days: 1 }).toJSDate());
+  let symbol: undefined | string = undefined;
+  for await (const bar of barsIterator) {
+    const date = bar.Timestamp.split('T')[0];
+    const file = `${tempDirectory}/${date}.csv`;
 
-  // {
-  //   "t": "2022-04-11T04:00:00Z",
-  //   "o": 168.77,
-  //   "h": 169.03,
-  //   "l": 166.1,
-  //   "c": 166.975,
-  //   "v": 40180280,
-  //   "n": 435528,
-  //   "vw": 167.08951
-  // }
+    fs.mkdirSync(tempDirectory, { recursive: true });
 
-  // for (const bar of bars) {
-  //   const date = bar.t.toISOString().split('T')[0];
-  //   const file = `${tempDirectory}/${date}.csv`;
+    const barData = `${bar.Symbol},${bar.OpenPrice},${bar.HighPrice},${bar.LowPrice},${bar.ClosePrice},${bar.VWAP},${bar.TradeCount}`;
 
-  //   fs.mkdirSync(tempDirectory, { recursive: true });
+    if (fs.existsSync(file)) {
+      fs.appendFileSync(file, barData + '\n');
+    } else {
+      const barHeaders = `symbol,open,high,low,close,volume_weighted,n`;
+      const barFileContent = [barHeaders, barData].join('\n');
+      fs.writeFileSync(file, barFileContent + '\n');
+    }
 
-  //   const barData = `${symbol},${bar.o},${bar.h},${bar.l},${bar.c},${(bar as any).vw},${(bar as any).n}`;
-
-  //   if (fs.existsSync(file)) {
-  //     fs.appendFileSync(file, barData + '\n');
-  //   } else {
-  //     const barHeaders = `symbol,open,high,low,close,volume_weighted,n`;
-  //     const barFileContent = [barHeaders, barData].join('\n');
-  //     fs.writeFileSync(file, barFileContent + '\n');
-  //   }
-  // }
-
-  // b1.increment(1, {
-  //   symbol
-  // });
-
-  // logger.info(`Downloaded ${bars.length} ${timeframe} bars for ${symbol}`);
+    if (!symbol || symbol != bar.Symbol) {
+      symbol = bar.Symbol;
+      b1.increment(1, {
+        symbol
+      });
+    }
+  }
 };
 
 export const mergeTempAndRegular = (directory: string, tempDirectory: string, mergeDirectory: string) => {
@@ -127,37 +115,50 @@ export const cleanup = (tempDirectory: string, mergeDirectory: string) => {
 
 // It's probably better to write to a new file and resolve the files line by line.
 
-export const syncDailyBars = async (params: { dataDirectory: string }) => {
-  const { dataDirectory } = params;
+export const syncDailyBars = async (params: { dataDir: string; start?: string; end?: string; symbols?: string[] }) => {
+  const { dataDir } = params;
 
-  const directory = `${dataDirectory}/${mapTimeframeToDirName('1Day')}`;
+  const directory = `${dataDir}/${mapTimeframeToDirName('1Day')}`;
   const tempDirectory = `${directory}.temp`;
   const mergeDirectory = `${directory}.merge`;
 
   // In case program died unexpectedly, run cleanup.
   cleanup(tempDirectory, mergeDirectory);
 
-  const tradeableSymbols = (await getTradeableAssets()).map(x => {
-    return x.symbol;
-  });
+  let tradeableSymbols: string[] | undefined = params.symbols;
+  if (!tradeableSymbols) {
+    tradeableSymbols = (await getTradeableAssets()).map(x => {
+      return x.symbol;
+    });
+  }
 
   // Adjust to taste or set to many years ago if doing a full sync.
-  const end = DateTime.now();
+  let end = DateTime.now();
+  if (params.end) {
+    end = DateTime.fromFormat(params.end, 'yyyy-MM-dd');
+  }
+
+  // @TODO If user has a better subscription, they can get data up until last 15 minutes.
+  if (Math.abs(end.diffNow('days').get('days')) < 1) {
+    end = DateTime.now().minus({ days: 1 });
+  }
+
   let start = DateTime.now().minus({ days: 5 });
   if (!fs.existsSync(directory)) {
     start = DateTime.now().minus({ years: 6 });
   }
+  if (params.start) {
+    start = DateTime.fromFormat(params.start, 'yyyy-MM-dd');
+  }
 
-  logger.info(`Downloading 1Day bars since ${start.toRFC2822()})`);
+  logger.info(`Downloading 1Day bars since ${start.toRFC2822()} to ${end.toRFC2822()}`);
   b1.start(tradeableSymbols.length, 0);
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
-  for (const s of tradeableSymbols) {
-    // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
-    await downloadAllDailyBarsIntoTempFiles([s], start, end, tempDirectory);
-    // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
-    // logger.info(`Symbol ${s} is up to date.`);
-  }
+  // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
+  await downloadAllDailyBarsIntoTempFiles(tradeableSymbols, start, end, tempDirectory);
+  // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
+  // logger.info(`Symbol ${s} is up to date.`);
 
   b1.stop();
 
