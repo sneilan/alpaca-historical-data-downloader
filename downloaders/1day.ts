@@ -127,7 +127,7 @@ export const cleanup = (tempDirectory: string, mergeDirectory: string) => {
 
 // It's probably better to write to a new file and resolve the files line by line.
 
-export const syncDailyBars = async (params: { dataDir: string, start?: string, end?: string }) => {
+export const syncDailyBars = async (params: { dataDir: string, start?: string, end?: string, symbols?: string[] }) => {
   const { dataDir } = params;
 
   const directory = `${dataDir}/${mapTimeframeToDirName('1Day')}`;
@@ -137,9 +137,12 @@ export const syncDailyBars = async (params: { dataDir: string, start?: string, e
   // In case program died unexpectedly, run cleanup.
   cleanup(tempDirectory, mergeDirectory);
 
-  const tradeableSymbols = (await getTradeableAssets()).map(x => {
-    return x.symbol;
-  });
+  let tradeableSymbols: string[] | undefined = params.symbols;
+  if (!tradeableSymbols) {
+    tradeableSymbols = (await getTradeableAssets()).map(x => {
+      return x.symbol;
+    });
+  }
 
   // Adjust to taste or set to many years ago if doing a full sync.
   let end = DateTime.now();
@@ -158,12 +161,10 @@ export const syncDailyBars = async (params: { dataDir: string, start?: string, e
   b1.start(tradeableSymbols.length, 0);
 
   // When downloading daily bars, first rm the existing days bars & then overwrite the bars.
-  for (const s of tradeableSymbols) {
     // logger.info(`Downloading daily data for ${s} from ${start} onwards.`);
-    await downloadAllDailyBarsIntoTempFiles([s], start, end, tempDirectory);
+    await downloadAllDailyBarsIntoTempFiles(tradeableSymbols, start, end, tempDirectory);
     // @TODO provide a checksum that says if we have retrieved all bars instead of simply reporting it's up to date.
     // logger.info(`Symbol ${s} is up to date.`);
-  }
 
   b1.stop();
 
