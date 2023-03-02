@@ -28,12 +28,10 @@ const downloadAllDailyBarsIntoTempFiles = async (
   end: DateTime,
   tempDirectory: string
 ) => {
-  // logger.info(`Getting all daily bars from alpaca for symbol ${symbol}`);
-
   const barsIterator = getAllBarsFromAlpaca(symbols, start.toJSDate(), end.toJSDate(), getTimeFrame(1, 'day'));
 
+  let symbol: undefined | string = undefined;
   for await (const bar of barsIterator) {
-    // @TODO check timestamp format.
     const date = bar.Timestamp.split('T')[0];
     const file = `${tempDirectory}/${date}.csv`;
 
@@ -48,13 +46,14 @@ const downloadAllDailyBarsIntoTempFiles = async (
       const barFileContent = [barHeaders, barData].join('\n');
       fs.writeFileSync(file, barFileContent + '\n');
     }
+
+    if (!symbol || symbol != bar.Symbol) {
+      symbol = bar.Symbol;
+      b1.increment(1, {
+        symbol
+      });
+    }
   }
-
-  // b1.increment(1, {
-  //   barsymbol
-  // });
-
-  // logger.info(`Downloaded ${bars.length} ${timeframe} bars for ${symbol}`);
 };
 
 export const mergeTempAndRegular = (directory: string, tempDirectory: string, mergeDirectory: string) => {
