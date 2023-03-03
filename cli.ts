@@ -16,7 +16,7 @@ const f = async () => {
 
   program.option(
     '--start <startDate>',
-    'Date in YYYY-MM-DD format to start downloading data from. Defaults to 30 days ago.',
+    'Date in YYYY-MM-DD format to start downloading data from. Defaults to 5 days ago.',
     undefined
   );
   program.option('--end <endDate>', 'Date in YYYY-MM-DD format to download data to. Defaults to yesterday.', undefined);

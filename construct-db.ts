@@ -50,7 +50,7 @@ const loadDb = async (dataDirectory: string) => {
   return sequelize;
 }
 
-export const buildDb = async (dataDirectory: string, start?: DateTime) => {
+export const buildDb = async (dataDirectory: string) => {
   const sequelize = await loadDb(dataDirectory);
 
   const Bar = await getBarModel(sequelize);
@@ -58,14 +58,19 @@ export const buildDb = async (dataDirectory: string, start?: DateTime) => {
   const dir = `${dataDirectory}/1day`;
   const dateFilenames = fs.readdirSync(dir);
 
+  // Given a set of files and a database, get the maximum date in the database & load files from five days ago if we have data in the database.
+  const [[{startJsDate}]] = (await sequelize.query(`select max(date) as startJsDate from daily_bars`)) as [{startJsDate: string}[], unknown];
+
+  const start = startJsDate ? DateTime.fromFormat(startJsDate, 'yyyy-MM-dd').minus({'days': 5}) : undefined;
+
   const filteredFiles = start ? dateFilenames.filter((d) => {
     const date = d.split('.csv')[0];
 
-    if (DateTime.fromISO(date).startOf('day') <= start.startOf('day')) {
-      return false;
+    if (DateTime.fromISO(date).startOf('day') >= start.startOf('day')) {
+      return true;
     }
 
-    return true;
+    return false;
   }) : dateFilenames;
 
   const beforeBars = await Bar.count();
@@ -84,9 +89,6 @@ export const buildDb = async (dataDirectory: string, start?: DateTime) => {
     const transaction = await sequelize.transaction();
     for (const stock of stocks) {
       const [symbol, open, high, low, close, volume_weighted, n] = stock.split(',');
-      // if (symbol !== 'SPY') {
-      //   continue;
-      // }
 
       await Bar.create({
         symbol,
