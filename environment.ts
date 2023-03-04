@@ -1,3 +1,12 @@
+import axiosRetry from 'axios-retry';
+import axios from 'axios';
+axiosRetry(axios, {
+  retries: 10000,
+  onRetry: () => {
+    console.log(`Retrying request`);
+  }
+});
+
 import { AlpacaClient } from '@master-chief/alpaca';
 import Alpaca from '@alpacahq/alpaca-trade-api';
 
