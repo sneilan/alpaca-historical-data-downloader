@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import { syncDailyBars } from './downloaders/1day';
 import { program } from 'commander';
-import { buildDb } from './construct-db';
+import { addIndexes, buildDb } from './construct-db';
 import logger from './logger';
 import { syncLatestIntradayBars } from './downloaders/intraday';
 // import { getTradeableAssets } from './helpers';
@@ -36,6 +36,12 @@ const f = async () => {
   );
 
   program.option(
+    '--add-indexes',
+    `Add indexes to daily db database.`,
+    false
+  );
+
+  program.option(
     '--download-1-min-bars',
     'Download 1 minute bars in --data-dir. By default syncs all minute bars from 6 years ago.',
     false
@@ -49,6 +55,11 @@ const f = async () => {
     return;
   }
 
+  if (options.addIndexes) {
+    logger.info(`Add indexes to database ${options.dataDir}/daily.db`);
+    addIndexes(options.dataDir);
+    return;
+  }
   if (options.download1MinBars) {
     logger.info(`Downloading 1 min bars`);
     syncLatestIntradayBars(options.dataDir, '1Min');

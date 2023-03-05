@@ -112,7 +112,7 @@ export const buildDb = async (dataDirectory: string) => {
   sequelize.close();
 }
 
-const addIndexes = async (dataDirectory: string) => {
+export const addIndexes = async (dataDirectory: string) => {
   const sequelize = await loadDb(dataDirectory);
   // const Bar = await getBarModel(sequelize);
   await sequelize.query(`create index idx_bar_date on daily_bars (date)`);
@@ -120,4 +120,4 @@ const addIndexes = async (dataDirectory: string) => {
 }
 
 // buildDb(DateTime.now().minus({ months: 1 }));
-// addIndexes()
+// addIndexes();
