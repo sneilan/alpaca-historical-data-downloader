@@ -1,17 +1,31 @@
-# alpaca-historical-data-downloader
-Command line tool (with managed ETL system) to download / sync all alpaca historical data to your hard drive as CSV files.
+# TLDR - Less flakey free stock market data
+This program provides a more stable method for downloading free stock market data than [yfinance](https://pypi.org/project/yfinance/) which is flakey and not officially supported by Yahoo. Use this tool if you want to trade using stock market data programmatically using your own tools but not ready to shell out $100/month or more.
 
-Alpaca https://alpaca.markets/ is an API-first stock / crypto brokerage. They provide api access to download trades, quotes, news, corporate actions and bars https://alpaca.markets/docs/api-references/market-data-api/. This tool syncs all of this available data from Alpaca to your hard drive as CSV files so you can create a professional backtesting and stock / crypto exploration environment.
+It includes a command line tool (with managed ETL system) to download / sync all 1day alpaca historical data to your hard drive as CSV files.
 
-The first time the tool runs, it downloads all available 1 day bars which takes about an hour or two. There are some options to focus on specific data types and filters on date ranges so you can get started backtesting sooner rather than later. Or you can pay for a $99/month plan temporarily which will speed up this process.
+```bash
+npm i -g alpaca-historical-data-downloader
+# cd to your desired directory
+export ALPACA_API_KEY=<your alpaca key here>
+export ALPACA_API_SECRET=<your alpaca api secret here>
+alpaca-historical-data-downloader
+```
 
-If the downloader sees that you've already ran and retrieved some data, it will put the data into a staging folder, which gets merged with your existing downloaded CSV files so if there are corrections to the data from Alpaca, these will be handled. By default, this tool assumes whatever is on Alpaca's servers is the correct data.
+![image](https://user-images.githubusercontent.com/91979/229888508-50bda22f-0c2e-4dee-81dd-efcf9d05ed08.png)
+
+# Why is this free?
+This stock market data comes from a brokerage called Alpaca. They provide historical market data apis for free to encourage users to trade more on their platform as having data will let users make more informed decisions.
+
 
 ## Installation & Usage
 
 By default, this tool syncs all available alpaca data 
 
-```
+The first time the tool runs, it downloads all available 1 day bars which takes about an hour or two. There are some options to focus on specific data types and filters on date ranges so you can get started backtesting sooner rather than later. Or you can pay for a $99/month plan temporarily which will speed up this process.
+
+If the downloader sees that you've already ran and retrieved some data, it will put the data into a staging folder, which gets merged with your existing downloaded CSV files so if there are corrections to the data from Alpaca, these will be handled. By default, this tool assumes whatever is on Alpaca's servers is the correct data.
+
+```bash
 npm i -g alpaca-historical-data-downloader
 # cd to your desired directory
 export ALPACA_API_KEY=<your alpaca key here>
