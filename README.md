@@ -3,7 +3,7 @@ This program provides a more stable method for downloading free stock market dat
 
 It includes a command line tool (with managed ETL system) to download / sync all 1day alpaca historical data to your hard drive as CSV files.
 
-First you'll need to register an account at [Alpaca](https://alpaca.markets/).
+First you'll need to register an account at [Alpaca](https://alpaca.markets/) and generate an API key.
 
 Then run the following:
 ```bash
