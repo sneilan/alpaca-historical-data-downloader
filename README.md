@@ -56,7 +56,7 @@ This will create a folder called data in the same directory that you ran in. It 
 
 Running the tool again will take far less time because it will detect the data folder and see the csv files in the data/1day folder. It will proceed to sync only what it needs to. This command can be ran each day and it will sync yesterday's market data.
 
-## Roadmap & Features
+## Roadmap
 
 New features in progress
 * Custom bar lengths
