@@ -5,6 +5,7 @@ It includes a command line tool (with managed ETL system) to download / sync all
 
 First you'll need to register an account at [Alpaca](https://alpaca.markets/).
 
+Then run the following:
 ```bash
 npm i -g alpaca-historical-data-downloader
 # cd to your desired directory
@@ -13,7 +14,10 @@ export ALPACA_API_SECRET=<your alpaca api secret here>
 alpaca-historical-data-downloader
 ```
 
+Now wait 1-2 hours and you'll have 5 years of historical market data on your hard drive as CSV files.
+
 ## Why is this free?
+
 This stock market data comes from a brokerage called Alpaca. They provide historical market data apis for free to encourage users to trade more on their platform as having data will let users make more informed decisions.
 
 ## Usage
