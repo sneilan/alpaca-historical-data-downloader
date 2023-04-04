@@ -1,4 +1,4 @@
-# TLDR - Less flakey free stock market data
+# Less flakey free stock market data
 This program provides a more stable method for downloading free stock market data than [yfinance](https://pypi.org/project/yfinance/) which is flakey and not officially supported by Yahoo. Use this tool if you want to trade using stock market data programmatically using your own tools but not ready to pay for market data.
 
 It includes a command line tool (with managed ETL system) to download / sync all 1day alpaca historical data to your hard drive as CSV files.
