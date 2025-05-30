@@ -9,8 +9,8 @@ Then run the following:
 ```bash
 npm i -g alpaca-historical-data-downloader
 # cd to your desired directory
-export ALPACA_API_KEY=<your alpaca key here>
-export ALPACA_API_SECRET=<your alpaca api secret here>
+export ALPACA_KEY=<your alpaca key here>
+export ALPACA_SECRET=<your alpaca api secret here>
 alpaca-historical-data-downloader
 ```
 
